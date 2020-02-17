@@ -21,6 +21,22 @@ public class Contact implements Comparable<Contact>{
         return this.name;
     }
 
+    public String getPhone() {
+        return isNull(phoneNumber) ? "" : this.phoneNumber;
+    }
+
+    public String getAddress() {
+        return isNull(address) ? "" : this.address;
+    }
+
+    public String getEmail() {
+        return isNull(emailAddress) ? "" : this.emailAddress;
+    }
+
+    public String getNote() {
+        return isNull(note) ? "" : this.note;
+    }
+
     private boolean isNull(Object s){
         return s == null;
     }
@@ -31,8 +47,8 @@ public class Contact implements Comparable<Contact>{
         if (!(o instanceof Contact))
             return false;
         Contact contact = (Contact) o;
-        return contact.name.equals(name) && contact.phoneNumber.equals(phoneNumber) && contact.emailAddress.equals(emailAddress)
-                && contact.address.equals(address);
+        return contact.name.equals(name) && contact.phoneNumber.equals(phoneNumber) &&
+                contact.emailAddress.equals(emailAddress) && contact.address.equals(address);
 
     }
 
@@ -76,11 +92,14 @@ public class Contact implements Comparable<Contact>{
         public Builder(String name){
             if (name.length() > 100)
                 throw new IllegalArgumentException("Name " + name + " cannot be greater than 100 characters");
+            if (name.length() == 0)
+                throw new IllegalArgumentException("Name cannot be blank");
             this.name = name;
         }
 
         public Builder address(String val){
-            this.address = val;
+            if(val != null && val != "")
+                this.address = val;
             return this;
         }
 
@@ -88,13 +107,14 @@ public class Contact implements Comparable<Contact>{
             //\d{10} matches 1234567890
             //(?:\d{3}-){2}\d{4} matches 123-456-7890
             //\(\d{3}\)\d{3}-?\d{4} matches (123)456-7890 or (123)4567890
-
-            String regex = "(\\+[0-9][0-9]?)?(\\d{10}|(?:\\d{3}-){2}\\d{4}|\\(\\d{3}\\)\\d{3}-?\\d{4})";
-            if(val.matches(regex)) {
+            if(val != null && val != "") {
+                String regex = "(\\+[0-9][0-9]?)?(\\d{10}|(?:\\d{3}-){2}\\d{4}|\\(\\d{3}\\)\\d{3}-?\\d{4})";
+                if (!val.matches(regex)) {
+                    throw new IllegalArgumentException("Phone number " + val + " is invalid");
+                }
                 this.phoneNumber = val;
-                return this;
             }
-            throw new IllegalArgumentException("Phone number " + val + " is invalid");
+            return this;
         }
 
         public Builder note(String val){
