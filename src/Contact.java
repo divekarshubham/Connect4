@@ -1,7 +1,8 @@
 import java.util.Comparator;
 
 //Assumption: cannot add a contact without a name
-
+//TODO: initialize toString in contact object
+//TODO: implement clone and write modify
 public class Contact implements Comparable<Contact>{
     private final String name;
     private final String address;
@@ -98,7 +99,7 @@ public class Contact implements Comparable<Contact>{
         }
 
         public Builder address(String val){
-            if(val != null && val != "")
+            if(val != null && !val.equals(""))
                 this.address = val;
             return this;
         }
@@ -107,7 +108,7 @@ public class Contact implements Comparable<Contact>{
             //\d{10} matches 1234567890
             //(?:\d{3}-){2}\d{4} matches 123-456-7890
             //\(\d{3}\)\d{3}-?\d{4} matches (123)456-7890 or (123)4567890
-            if(val != null && val != "") {
+            if(val != null && !val.equals("")) {
                 String regex = "(\\+[0-9][0-9]?)?(\\d{10}|(?:\\d{3}-){2}\\d{4}|\\(\\d{3}\\)\\d{3}-?\\d{4})";
                 if (!val.matches(regex)) {
                     throw new IllegalArgumentException("Phone number " + val + " is invalid");
@@ -118,17 +119,20 @@ public class Contact implements Comparable<Contact>{
         }
 
         public Builder note(String val){
-            this.note = val;
+            if(val != null && !val.equals(""))
+                this.note = val;
             return this;
         }
 
         public Builder email(String val){
-            String regex = "^[\\w-_.+]*[\\w-_.]@([\\w]+\\.)+[\\w]+[\\w]$";
-            if(val.matches(regex)) {
+            if(val != null && !val.equals("")) {
+                String regex = "^[\\w-_.+]*[\\w-_.]@([\\w]+\\.)+[\\w]+[\\w]$";
+                if (!val.matches(regex)) {
+                    throw new IllegalArgumentException("Email " + val + " is invalid");
+                }
                 this.emailAddress = val;
-                return this;
             }
-            throw new IllegalArgumentException("Email " + val + " is invalid");
+            return this;
         }
 
         public Contact build(){
