@@ -1,9 +1,11 @@
+import java.util.Comparator;
+
 //Assumption: cannot add a contact without a name
-//TODO: add input validations to the entries
-public class Contact {
+
+public class Contact implements Comparable<Contact>{
     private final String name;
     private final String address;
-    private final int phoneNumber;
+    private final String phoneNumber;
     private final String note;
     private final String emailAddress;
 
@@ -19,14 +21,61 @@ public class Contact {
         return this.name;
     }
 
+    private boolean isNull(Object s){
+        return s == null;
+    }
+
+    @Override public boolean equals(Object o){
+        if (o == this)
+            return true;
+        if (!(o instanceof Contact))
+            return false;
+        Contact contact = (Contact) o;
+        return contact.name.equals(name) && contact.phoneNumber.equals(phoneNumber) && contact.emailAddress.equals(emailAddress)
+                && contact.address.equals(address);
+
+    }
+
+    @Override public int hashCode(){
+        int hash = name.hashCode();
+        hash += isNull(phoneNumber) ? 0 : hash * 31 + phoneNumber.hashCode();
+        hash += isNull(address) ? 0 : hash * 31 + address.hashCode();
+        hash += isNull(emailAddress) ? 0 : hash * 31 + emailAddress.hashCode();
+        hash += isNull(note) ? 0 : hash * 31 + note.hashCode();
+        return hash;
+    }
+
+    @Override public String toString(){
+        StringBuilder contactInfo = new StringBuilder("Contact Info = { Name:" + this.name);
+        contactInfo.append(isNull(phoneNumber) ? "" : ", Phone:" + this.phoneNumber);
+        contactInfo.append(isNull(address) ? "" : ", Address:" + this.address);
+        contactInfo.append(isNull(emailAddress) ? "" : ", Email:" + this.emailAddress);
+        contactInfo.append(isNull(note) ? "" : ", Note:" + this.note);
+        contactInfo.append(" }");
+
+        return contactInfo.toString();
+    }
+
+    private static final Comparator<Contact> COMPARATOR = Comparator.comparing((Contact c) -> c.name)
+            .thenComparing(c -> (c.phoneNumber == null) ? "" : c.phoneNumber)
+            .thenComparing(c -> (c.address == null) ? "" : c.address)
+            .thenComparing(c -> (c.emailAddress == null) ? "" : c.emailAddress)
+            .thenComparing(c -> (c.note == null) ? "" : c.note);
+
+    public int compareTo(Contact c) {
+        return COMPARATOR.compare(this, c);
+    }
+
     public static class Builder{
         private final String name;
         private String address;
-        private int phoneNumber;
+        private String phoneNumber;
         private String note;
         private String emailAddress;
 
         public Builder(String name){
+            if (name.length() > 100)
+                throw new IllegalArgumentException("Name " + name + " cannot be greater than 100 characters");
             this.name = name;
         }
 
@@ -35,9 +84,17 @@ public class Contact {
             return this;
         }
 
-        public Builder phoneNumber(int val){
-            this.phoneNumber = val;
-            return this;
+        public Builder phoneNumber(String val){
+            //\d{10} matches 1234567890
+            //(?:\d{3}-){2}\d{4} matches 123-456-7890
+            //\(\d{3}\)\d{3}-?\d{4} matches (123)456-7890 or (123)4567890
+
+            String regex = "(\\+[0-9][0-9]?)?(\\d{10}|(?:\\d{3}-){2}\\d{4}|\\(\\d{3}\\)\\d{3}-?\\d{4})";
+            if(val.matches(regex)) {
+                this.phoneNumber = val;
+                return this;
+            }
+            throw new IllegalArgumentException("Phone number " + val + " is invalid");
         }
 
         public Builder note(String val){
@@ -46,8 +103,12 @@ public class Contact {
         }
 
         public Builder email(String val){
-            this.emailAddress = val;
-            return this;
+            String regex = "^[\\w-_.+]*[\\w-_.]@([\\w]+\\.)+[\\w]+[\\w]$";
+            if(val.matches(regex)) {
+                this.emailAddress = val;
+                return this;
+            }
+            throw new IllegalArgumentException("Email " + val + " is invalid");
         }
 
         public Contact build(){
