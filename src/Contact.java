@@ -1,7 +1,6 @@
 import java.util.Comparator;
 
 //Assumption: cannot add a contact without a name
-//TODO: initialize toString in contact object
 //TODO: implement clone and write modify
 public class Contact implements Comparable<Contact>{
     private final String name;
@@ -9,6 +8,7 @@ public class Contact implements Comparable<Contact>{
     private final String phoneNumber;
     private final String note;
     private final String emailAddress;
+    private String contactInfo = "";
 
     private Contact(Builder builder){
         this.name = builder.name;
@@ -42,6 +42,15 @@ public class Contact implements Comparable<Contact>{
         return s == null;
     }
 
+    Contact modify(ContactFields parameter, String newVal){
+        return new Builder(parameter == ContactFields.NAME ? newVal : this.name)
+            .phoneNumber(parameter == ContactFields.PHONE ? newVal : this.phoneNumber)
+            .address(parameter == ContactFields.ADDR ? newVal : this.address)
+            .email(parameter == ContactFields.EMAIL ? newVal : this.emailAddress)
+            .note(parameter == ContactFields.NOTE ? newVal : this.note)
+            .build();
+    }
+
     @Override public boolean equals(Object o){
         if (o == this)
             return true;
@@ -63,14 +72,18 @@ public class Contact implements Comparable<Contact>{
     }
 
     @Override public String toString(){
-        StringBuilder contactInfo = new StringBuilder("Contact Info = { Name:" + this.name);
-        contactInfo.append(isNull(phoneNumber) ? "" : ", Phone:" + this.phoneNumber);
-        contactInfo.append(isNull(address) ? "" : ", Address:" + this.address);
-        contactInfo.append(isNull(emailAddress) ? "" : ", Email:" + this.emailAddress);
-        contactInfo.append(isNull(note) ? "" : ", Note:" + this.note);
-        contactInfo.append(" }");
+        /* Lazy initialization of contactInfo*/
+        if(contactInfo.equals("")) {
+            StringBuilder contactInfo = new StringBuilder("Contact Info = { Name:" + this.name);
+            contactInfo.append(isNull(phoneNumber) ? "" : ", Phone:" + this.phoneNumber);
+            contactInfo.append(isNull(address) ? "" : ", Address:" + this.address);
+            contactInfo.append(isNull(emailAddress) ? "" : ", Email:" + this.emailAddress);
+            contactInfo.append(isNull(note) ? "" : ", Note:" + this.note);
+            contactInfo.append(" }");
+            this.contactInfo = contactInfo.toString();
+        }
 
-        return contactInfo.toString();
+        return contactInfo;
     }
 
     private static final Comparator<Contact> COMPARATOR = Comparator.comparing((Contact c) -> c.name)

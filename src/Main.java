@@ -5,10 +5,13 @@ public class Main {
         //System.out.println("Hello "+c1.hashCode()+"Hello2 "+c2.hashCode()+"Eq "+c1.equals(c2)+ "Hello "+c1.compareTo(c2) + "Hello "+c1);
         AddressBook a = new AddressBook();
         a.addContact(c1);
-        a.addContact(c2);
+        a.modifyContact(c1, ContactFields.NAME, "sd");
+        System.out.println(a.searchByField(ContactFields.NAME, "sd"));
+        //a.addContact(c1);
+        //a.addContact(c2);
         //a.saveState();
-        AddressBook b = new AddressBook("C:\\Users\\Shubham Divekar\\IdeaProjects\\AddressBook\\AddressBook-2020-02-17");
-        System.out.println(b.search("haha"));
-        System.out.println(b.searchByField(ContactFields.EMAIL, "haha"));
+//        AddressBook b = new AddressBook("C:\\Users\\Shubham Divekar\\IdeaProjects\\AddressBook\\AddressBook-2020-02-18");
+//        System.out.println(a.search("sd"));
+//        System.out.println(a.searchByField(ContactFields.EMAIL, "hagg"));
     }
 }

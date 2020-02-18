@@ -3,5 +3,5 @@ public enum ContactFields{
     PHONE,
     ADDR,
     EMAIL,
-    NOTE;
+    NOTE
 }
