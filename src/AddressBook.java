@@ -12,9 +12,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-//TODO: comply with the stylesheet
 //TODO: add comments and javadocs and readme.md
-//TODO: implement tostring etc
+//TODO:cleanup sysouts
 public class AddressBook {
 
     private Set<Contact> storage;
@@ -32,7 +31,6 @@ public class AddressBook {
     public void saveState() {
         if (filePath == null || filePath.equals("")) {
             String filePath = "AddressBook-" + LocalDate.now();
-            System.out.println(filePath);
             exportToFile(filePath);
             this.filePath = filePath;
         } else
@@ -84,21 +82,24 @@ public class AddressBook {
     private Contact parseContacts(JSONObject contact) {
         JSONObject contactObject = (JSONObject) contact.get("Contact");
         return new Contact.Builder((String) contactObject.get("Name")).phoneNumber((String) contactObject.get("Phone"))
-                .address((String) contactObject.get("Address")).email((String) contactObject.get("E-Mail"))
-                .note((String) contactObject.get("Note")).build();
+            .address((String) contactObject.get("Address")).email((String) contactObject.get("E-Mail"))
+            .note((String) contactObject.get("Note")).build();
     }
 
-    public void addContact(Contact contact) {
+    public AddressBook addContact(Contact contact) {
         storage.add(contact);
+        return this;
     }
 
-    public void addMultipleContacts(List<Contact> contacts) {
+    public AddressBook addMultipleContacts(List<Contact> contacts) {
         storage.addAll(contacts);
+        return this;
     }
 
-    public void addContactsFromFile(String filePath){
+    public AddressBook addContactsFromFile(String filePath) {
         List<Contact> contacts = importFromFile(filePath);
         storage.addAll(contacts);
+        return this;
     }
 
     public int removeContactByField(ContactFields parameter, String query) {
@@ -107,8 +108,8 @@ public class AddressBook {
         return contacts.size();
     }
 
-    public int removeMultipleContacts(List<Contact> contacts){
-        if(storage.removeAll(contacts))
+    public int removeMultipleContacts(List<Contact> contacts) {
+        if (storage.removeAll(contacts))
             return contacts.size();
         return 0;
     }
@@ -159,16 +160,41 @@ public class AddressBook {
         return searchResults;
     }
 
-    public void modifyContact(Contact contact, ContactFields field, String newVal){
-        if(storage.contains(contact)) {
-            System.out.println("hi");
+    public void modifyContact(Contact contact, ContactFields field, String newVal) {
+        if (storage.contains(contact)) {
             storage.remove(contact);
             contact = contact.modify(field, newVal);
-            System.out.println(contact);
             storage.add(contact);
-        }
-        else
+        } else
             throw new IllegalArgumentException("Contact not present in AddressBook");
+    }
+
+    public List<Contact> getContacts() {
+        return new ArrayList<>(storage);
+    }
+
+    @Override
+    public String toString() {
+        return storage.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof AddressBook))
+            return false;
+        AddressBook addressBook = (AddressBook) o;
+        return getContacts().equals(addressBook.getContacts());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        for (Contact contact : storage) {
+            hash += hash * 31 + contact.hashCode();
+        }
+        return hash;
     }
 
 }
