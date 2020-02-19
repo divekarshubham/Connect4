@@ -129,7 +129,7 @@ public class AddressBook {
     private Contact parseContacts(JSONObject contact) {
         JSONObject contactObject = (JSONObject) contact.get("Contact");
         return new Contact.Builder((String) contactObject.get("Name"))
-            .phoneNumber((String) contactObject.get("Phone"))
+            .phoneNumber((String) contactObject.get("PhoneNumber"))
             .address((String) contactObject.get("Address"))
             .email((String) contactObject.get("E-Mail"))
             .note((String) contactObject.get("Note")).build();
