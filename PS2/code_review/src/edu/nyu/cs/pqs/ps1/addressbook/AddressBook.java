@@ -1,15 +1,16 @@
 package edu.nyu.cs.pqs.ps1.addressbook;
 
+import edu.nyu.cs.pqs.ps1.addressbook.Entry.Builder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import edu.nyu.cs.pqs.ps1.addressbook.Entry.Builder;
 
 /**
  * A general purpose address book that supports add, search and remove.
