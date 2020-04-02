@@ -1,10 +1,10 @@
 package edu.nyu.pqs.stopwatch.demo;
 
-import java.util.List;
-import java.util.logging.Logger;
-
 import edu.nyu.pqs.stopwatch.api.Stopwatch;
 import edu.nyu.pqs.stopwatch.impl.StopwatchFactory;
+
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * This is a simple program that demonstrates just some of the functionality
@@ -25,6 +25,8 @@ public class SlowThinker {
   public static void main(String[] args) {
     SlowThinker thinker = new SlowThinker();
     thinker.go();
+//    SlowThinker thinker2 = new SlowThinker();
+//    thinker2.go();
   }
 
   /**
@@ -36,18 +38,31 @@ public class SlowThinker {
   private void go() {
     Runnable runnable = new Runnable() {
       public void run() {
+        logger.info("Starting the clock");
         Stopwatch stopwatch = StopwatchFactory.getStopwatch(
             "ID " + Thread.currentThread().getId());
         stopwatch.start();
         for (int i = 0; i < 10; i++) {
           try {
-            Thread.sleep(5000);
+            Thread.sleep(500);
           } catch (InterruptedException ignored) { }
           stopwatch.lap();
         }
         stopwatch.stop();
         List<Long> times = stopwatch.getLapTimes();
         logger.info(times.toString());
+        System.out.println(stopwatch);
+
+        stopwatch.start();
+        try {
+          Thread.sleep(500);
+          stopwatch.lap();
+          Thread.sleep(500);
+        }
+        catch (InterruptedException ignored)  {}
+        stopwatch.stop();
+        logger.info(stopwatch.getLapTimes().toString());
+        System.out.println(stopwatch);
       }
     };
     Thread thinkerThread = new Thread(runnable);

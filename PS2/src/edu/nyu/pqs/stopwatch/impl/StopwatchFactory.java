@@ -1,35 +1,60 @@
 package edu.nyu.pqs.stopwatch.impl;
 
-import java.util.List;
-
 import edu.nyu.pqs.stopwatch.api.Stopwatch;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * The StopwatchFactory is a thread-safe factory class for Stopwatch objects.
  * It maintains references to all created Stopwatch objects and provides a
  * convenient method for getting a list of those objects.
- *
  */
 public class StopwatchFactory {
+    private static ConcurrentMap<String, SafeWatch> stopwatches = new ConcurrentHashMap<>();
+    private static int currentID = 0;
+    private static Object SWFlock = new Object();
 
-  /**
-   * Creates and returns a new Stopwatch object
-   * @param id The identifier of the new object
-   * @return The new Stopwatch object
-   * @throws IllegalArgumentException if <code>id</code> is empty, null, or
-   *     already taken.
-   */
-  public static Stopwatch getStopwatch(String id) {
-    // replace this return statement with correct code
-    return null;
-  }
+    /***
+     * Private constructor to make StopWatchFactory non-initializable
+     */
+    private StopwatchFactory() {
+        throw new AssertionError("Impossible scenario");
+    }
 
-  /**
-   * Returns a list of all created stopwatches
-   * @return a List of al creates Stopwatch objects.  Returns an empty
-   * list if no Stopwatches have been created.
-   */
-  public static List<Stopwatch> getStopwatches() {
-    return null;
-  }
+    /**
+     * Creates and returns a new Stopwatch object
+     *
+     * @param id The identifier of the new object
+     * @return The new Stopwatch object
+     * @throws IllegalArgumentException if <code>id</code> is empty, null, or
+     *                                  already taken.
+     */
+    public static Stopwatch getStopwatch(String id) {
+        if (id == null || id.equals("")) {
+            throw new IllegalArgumentException("Invalid id");
+        }
+        synchronized (SWFlock) {
+            if (stopwatches.containsKey(id)) {
+                throw new IllegalArgumentException("ID already exists");
+            }
+            SafeWatch sw = new SafeWatch(id);
+            stopwatches.put(id, sw);
+            return sw;
+        }
+    }
+
+    /**
+     * Returns a list of all created stopwatches
+     *
+     * @return a List of al creates Stopwatch objects.  Returns an empty
+     * list if no Stopwatches have been created.
+     */
+    public static List<Stopwatch> getStopwatches() {
+        synchronized (SWFlock) {
+            return new ArrayList<Stopwatch>(stopwatches.values());
+        }
+    }
 }
