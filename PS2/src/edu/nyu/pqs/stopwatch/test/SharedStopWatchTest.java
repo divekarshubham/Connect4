@@ -4,7 +4,7 @@ import edu.nyu.pqs.stopwatch.api.Stopwatch;
 import edu.nyu.pqs.stopwatch.impl.StopwatchFactory;
 import org.junit.Assert;
 
-public class SafeWatchTest {
+public class SharedStopWatchTest {
 
     private Stopwatch stopwatch;
 
@@ -81,9 +81,10 @@ public class SafeWatchTest {
         tenLapsOnStopwatch();
         stopwatch.stop();
         Assert.assertEquals(11, stopwatch.getLapTimes().size());
+
         stopwatch.start();
         try {
-            Thread.sleep(500);
+            Thread.sleep(1000);
         } catch (InterruptedException ignored) {
         }
         stopwatch.stop();

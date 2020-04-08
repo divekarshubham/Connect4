@@ -16,8 +16,8 @@ import java.util.logging.Logger;
  */
 public class SlowThinker {
 
-  private static final Logger logger = 
-      Logger.getLogger("edu.nyu.pqs.ps4.demo.SlowThinker");
+  private static final Logger logger =
+          Logger.getLogger("edu.nyu.pqs.ps4.demo.SlowThinker");
 
   /**
    * Run the SlowThinker demo application
@@ -25,8 +25,6 @@ public class SlowThinker {
   public static void main(String[] args) {
     SlowThinker thinker = new SlowThinker();
     thinker.go();
-//    SlowThinker thinker2 = new SlowThinker();
-//    thinker2.go();
   }
 
   /**
@@ -38,31 +36,19 @@ public class SlowThinker {
   private void go() {
     Runnable runnable = new Runnable() {
       public void run() {
-        logger.info("Starting the clock");
         Stopwatch stopwatch = StopwatchFactory.getStopwatch(
-            "ID " + Thread.currentThread().getId());
+                "ID " + Thread.currentThread().getId());
         stopwatch.start();
         for (int i = 0; i < 10; i++) {
           try {
-            Thread.sleep(500);
+            Thread.sleep(5000);
           } catch (InterruptedException ignored) { }
           stopwatch.lap();
         }
         stopwatch.stop();
         List<Long> times = stopwatch.getLapTimes();
         logger.info(times.toString());
-        System.out.println(stopwatch);
-
-        stopwatch.start();
-        try {
-          Thread.sleep(500);
-          stopwatch.lap();
-          Thread.sleep(500);
-        }
-        catch (InterruptedException ignored)  {}
-        stopwatch.stop();
-        logger.info(stopwatch.getLapTimes().toString());
-        System.out.println(stopwatch);
+        logger.info(stopwatch.toString());
       }
     };
     Thread thinkerThread = new Thread(runnable);

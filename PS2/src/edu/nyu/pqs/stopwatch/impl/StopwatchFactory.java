@@ -13,8 +13,7 @@ import java.util.concurrent.ConcurrentMap;
  * convenient method for getting a list of those objects.
  */
 public class StopwatchFactory {
-    private static ConcurrentMap<String, SafeWatch> stopwatches = new ConcurrentHashMap<>();
-    private static int currentID = 0;
+    private static ConcurrentMap<String, SharedStopWatch> stopwatches = new ConcurrentHashMap<>();
     private static Object SWFlock = new Object();
 
     /***
@@ -40,7 +39,7 @@ public class StopwatchFactory {
             if (stopwatches.containsKey(id)) {
                 throw new IllegalArgumentException("ID already exists");
             }
-            SafeWatch sw = new SafeWatch(id);
+            SharedStopWatch sw = new SharedStopWatch(id);
             stopwatches.put(id, sw);
             return sw;
         }

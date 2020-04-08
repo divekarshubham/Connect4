@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class SafeWatch implements Stopwatch {
+public class SharedStopWatch implements Stopwatch {
 
     private final String id;
     private List<Long> elapsedTimes;
@@ -22,7 +22,7 @@ public class SafeWatch implements Stopwatch {
      * times
      * @param id identifier for the Stopwatch
      */
-    public SafeWatch(String id) {
+    public SharedStopWatch(String id) {
         this.id = id;
         elapsedTimes = new ArrayList<>();
         watchState = WatchState.READY;
@@ -105,7 +105,6 @@ public class SafeWatch implements Stopwatch {
             elapsedTimes.clear();
             watchState = WatchState.READY;
         }
-
     }
 
     /**
@@ -135,10 +134,10 @@ public class SafeWatch implements Stopwatch {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof SafeWatch)) {
+        if (!(o instanceof SharedStopWatch)) {
             return false;
         }
-        SafeWatch sw2 = (SafeWatch) o;
+        SharedStopWatch sw2 = (SharedStopWatch) o;
         return this.id.equals(sw2.getId());
     }
 
@@ -159,6 +158,7 @@ public class SafeWatch implements Stopwatch {
         for (Long millis : elapsedTimes) {
             totalTime += millis;
             hms += "Lap " + i + ": " + getFormattedTime(totalTime) + " Duration: " + millis + " milliseconds\n";
+            i++;
 
         }
         synchronized (lock) {
