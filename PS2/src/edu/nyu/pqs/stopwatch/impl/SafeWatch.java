@@ -58,6 +58,13 @@ public class SafeWatch implements Stopwatch {
         lastLapTime = starttime;
     }
 
+    /**
+     * Stores the time elapsed since the last time lap() was called
+     * or since start() was called if this is the first lap and stores
+     * it in a list. Has no effect on the stopwatch state.
+     *
+     * @throws IllegalStateException thrown when the stopwatch isn't running
+     */
     @Override
     public void lap() throws IllegalStateException {
         synchronized (lock) {
@@ -69,6 +76,12 @@ public class SafeWatch implements Stopwatch {
         lastLapTime = lapTime;
     }
 
+    /**
+     * Stops the stopwatch (and records one final lap). This lap is deleted if the
+     * stopwatch is started again. Changes the state of the stopwatch to STOPPED
+     *
+     * @throws IllegalStateException thrown when the stopwatch isn't running
+     */
     @Override
     public void stop() throws IllegalStateException {
         synchronized (lock) {
@@ -80,6 +93,10 @@ public class SafeWatch implements Stopwatch {
         watchState = WatchState.STOPPED;
     }
 
+    /**
+     * Resets the stopwatch.  If the stopwatch is running, this method stops the
+     * watch and resets it.  This also clears all recorded laps.
+     */
     @Override
     public void reset() {
         synchronized (lock) {
@@ -91,17 +108,48 @@ public class SafeWatch implements Stopwatch {
 
     }
 
+    /**
+     * Returns a list of lap times (in milliseconds).  This method can be called at
+     * any time and will not throw an exception.
+     *
+     * @return a list of recorded lap times or an empty list.
+     */
     @Override
     public List<Long> getLapTimes() {
         return elapsedTimes;
     }
 
+    /**
+     * Generates a string to represent the current state of the clock, recording all laptimes.
+     *
+     * @return
+     */
     @Override
     public String toString() {
-        long millis = endtime - starttime;
-        String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
-                TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
-                TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1));
+        synchronized (lock) {
+            if (watchState == WatchState.READY)
+                return "00:00:00";
+        }
+        String hms = "";
+        int i = 1;
+        long totalTime = 0;
+        for (Long millis : elapsedTimes) {
+            totalTime += millis;
+            hms = hms + "Lap " + i + ": " + getFormattedTime(totalTime) + " Duration: " + millis + " milliseconds\n";
+
+        }
+        synchronized (lock) {
+            if (watchState == WatchState.RUNNING)
+                endtime = System.currentTimeMillis();
+            totalTime += endtime - lastLapTime;
+        }
+        hms += "Total time elapsed: " + getFormattedTime(totalTime);
         return hms;
+    }
+
+    private String getFormattedTime(Long time) {
+        return String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(time),
+                TimeUnit.MILLISECONDS.toMinutes(time) % TimeUnit.HOURS.toMinutes(1),
+                TimeUnit.MILLISECONDS.toSeconds(time) % TimeUnit.MINUTES.toSeconds(1));
     }
 }
