@@ -10,11 +10,11 @@ public class SafeWatch implements Stopwatch {
 
     private final String id;
     private List<Long> elapsedTimes;
-    private long starttime;
-    private long endtime;
+    private long startTime;
+    private long endTime;
     private long lastLapTime;
     private WatchState watchState;
-    private Object lock;
+    private final Object lock;
     private long delay;
 
     /***
@@ -54,8 +54,8 @@ public class SafeWatch implements Stopwatch {
             }
             watchState = WatchState.RUNNING;
         }
-        starttime = System.currentTimeMillis();
-        lastLapTime = starttime;
+        startTime = System.currentTimeMillis();
+        lastLapTime = startTime;
     }
 
     /**
@@ -88,8 +88,8 @@ public class SafeWatch implements Stopwatch {
             if (watchState != WatchState.RUNNING)
                 throw new IllegalStateException("Watch " + id + " is not running");
         }
-        endtime = System.currentTimeMillis();
-        elapsedTimes.add(endtime - lastLapTime + delay);
+        endTime = System.currentTimeMillis();
+        elapsedTimes.add(endTime - lastLapTime + delay);
         watchState = WatchState.STOPPED;
     }
 
@@ -100,8 +100,8 @@ public class SafeWatch implements Stopwatch {
     @Override
     public void reset() {
         synchronized (lock) {
-            starttime = 0;
-            endtime = 0;
+            startTime = 0;
+            endTime = 0;
             elapsedTimes.clear();
             watchState = WatchState.READY;
         }
@@ -120,9 +120,32 @@ public class SafeWatch implements Stopwatch {
     }
 
     /**
+     * Calculates hashcode based on unique ID to enable hashed storage
+     */
+    @Override
+    public int hashCode() {
+        return 31 * 13 + ((id == null) ? 0 : id.hashCode());
+    }
+
+    /**
+     * Equality check based on unique ID, to enable storing in a collection
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof SafeWatch)) {
+            return false;
+        }
+        SafeWatch sw2 = (SafeWatch) o;
+        return this.id.equals(sw2.getId());
+    }
+
+    /**
      * Generates a string to represent the current state of the clock, recording all laptimes.
      *
-     * @return
+     * @return Representation of the stopwatch
      */
     @Override
     public String toString() {
@@ -135,13 +158,13 @@ public class SafeWatch implements Stopwatch {
         long totalTime = 0;
         for (Long millis : elapsedTimes) {
             totalTime += millis;
-            hms = hms + "Lap " + i + ": " + getFormattedTime(totalTime) + " Duration: " + millis + " milliseconds\n";
+            hms += "Lap " + i + ": " + getFormattedTime(totalTime) + " Duration: " + millis + " milliseconds\n";
 
         }
         synchronized (lock) {
             if (watchState == WatchState.RUNNING)
-                endtime = System.currentTimeMillis();
-            totalTime += endtime - lastLapTime;
+                endTime = System.currentTimeMillis();
+            totalTime += endTime - lastLapTime;
         }
         hms += "Total time elapsed: " + getFormattedTime(totalTime);
         return hms;
