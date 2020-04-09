@@ -10,11 +10,11 @@ This is the implementation of the `StopWatch` interface. It uses a explicit `loc
 Represents the states that the stopwatch can be in i.e. READY(when the stopwatch has just been created or reset), RUNNING, and STOPPED(after calling `stop()`)
 
 ### III. FunctionalityTester
-
-This contains a class to test the edge case behavior of the `StopWatch`. It contains the test to check the pausing functionality and also contains a method to test the thread-safety of the `StopWatch`
+'Test/edu/nyu/pqs/stopwatch/impl/FunctionalityTester.java' contains a class to test the edge case behavior of the `StopWatch`. It contains the test to check the pausing functionality and also contains a method to test the thread-safety of the `StopWatch`
 
 IV. UnitTests
 
+Unit tests are created in `Test/edu/nyu/pqs/stopwatch/impl/`
 `SharedStopWatchTest` and `StopWatchFactoryTest` contain the unit test for their respective classes.
 
 ## 2. Code Review
