@@ -56,4 +56,11 @@ public class StopwatchFactory {
             return new ArrayList<Stopwatch>(stopwatches.values());
         }
     }
+
+    /**
+     * Package private method for testing the class
+     */
+    static void clearList(){
+        stopwatches.clear();
+    }
 }
