@@ -21,4 +21,4 @@ IV. UnitTests
 
 The code view is in the following format
 
-[line number, class name]: comment
+(line number, class name): comment
