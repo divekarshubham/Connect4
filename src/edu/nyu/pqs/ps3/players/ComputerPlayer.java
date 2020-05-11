@@ -4,7 +4,8 @@ import edu.nyu.pqs.ps3.model.ConnectFourModel;
 import edu.nyu.pqs.ps3.model.Result;
 
 import java.awt.*;
-import java.util.Random;
+import java.util.*;
+import java.util.List;
 
 public class ComputerPlayer implements Player{
     int playerId;
@@ -69,38 +70,9 @@ public class ComputerPlayer implements Player{
         model.insertToken(col);
     }
 
-
-    private int minimax1(int[][] board,int depth,int alpha,int beta, boolean maximizingPlayer){
-        if(depth == 0)
-            return evaluateBoard(board);
-        if(maximizingPlayer){
-            int maxEval = Integer.MIN_VALUE;
-            for(int col=0; col< numCols; col++){
-                int[][] newBoard = insertInBoard(col, board, playerId);
-                int eval = minimax1(newBoard, depth-1, alpha, beta, false);
-                maxEval = maxEval > eval ? maxEval : eval;
-                alpha = alpha > eval ? alpha : eval;
-                if(beta<= alpha)
-                    break;
-            }
-            return maxEval;
-        }else {
-            int minEval = Integer.MAX_VALUE;
-            for(int col=0; col< numCols; col++){
-                int[][] newBoard = insertInBoard(col, board, -1);
-                int eval = minimax1(newBoard, depth-1, alpha, beta, true);
-                minEval = minEval < eval ? minEval : eval;
-                beta = beta < eval ? beta : eval;
-                if(beta<= alpha)
-                    break;
-            }
-            return minEval;
-        }
-    }
-
     private Pair minimax(int[][] board,int depth,int alpha,int beta, boolean maximizingPlayer, int column){
         if(depth == 0)
-            return new Pair(column, evaluateBoard(board));
+            return new Pair(column, evaluateBoard_center(board));
         Result result = checkGameStatus(board);
         if(result == Result.WIN){
             //printBoard(board);
@@ -145,6 +117,51 @@ public class ComputerPlayer implements Player{
         }
     }
 
+    private int evaluateBoard_center(int [][] newBoard) {
+        int score = longest_chain(newBoard) * 10;
+        int center = numCols/2;
+        for (int row = 0; row < numRows; row++)
+            for (int col = 0; col < numCols; col++)
+                if(newBoard[row][col] != 0){
+                    //TODO: check this +/-
+                    if(newBoard[row][col] == playerId)
+                        score -= Math.abs(center - col);
+                    else
+                        score += Math.abs(center - col);
+                }
+        return score;
+    }
+
+    private int longest_chain(int[][] newBoard) {
+        int longest = 0;
+        for (int row = 0; row < numRows; row++)
+            for (int col = 0; col < numCols; col++)
+                if(newBoard[row][col] != 0){
+                    int temp = maxLengthFromCell(newBoard, row, col);
+                    longest = longest > temp ? longest : temp;
+                }
+        return longest;
+    }
+
+    private int maxLengthFromCell(int[][] newBoard, int row, int col) {
+        List<Integer> directions = new ArrayList<>();
+        directions.add(chainLength(newBoard, row, col, new Pair(1,1)) + chainLength(newBoard, row, col, new Pair(-1,-1)) + 1 );
+        directions.add(chainLength(newBoard, row, col, new Pair(1,0)) + chainLength(newBoard, row, col, new Pair(-1,0)) + 1 );
+        directions.add(chainLength(newBoard, row, col, new Pair(0,1)) + chainLength(newBoard, row, col, new Pair(0,-1)) + 1 );
+        directions.add(chainLength(newBoard, row, col, new Pair(-1,1)) + chainLength(newBoard, row, col, new Pair(1,-1)) + 1 );
+
+        return Collections.max(directions);
+    }
+
+    private int chainLength(int[][] newBoard, int row, int col, Pair direction) {
+        int count = 0;
+        while (row >= 0 && row < numRows && col >= 0 && col < numCols && newBoard[row][col]==playerId){
+            row += direction.getCol();
+            col += direction.getVal();
+            count++;
+        }
+        return count - 1;
+    }
 
 
     private int[][] insertInBoard(int col, int[][] board, int id) {
@@ -159,7 +176,7 @@ public class ComputerPlayer implements Player{
         return newBoard;
     }
 
-    private int evaluateBoard(int [][] newBoard) {
+    private int evaluateBoard_static(int [][] newBoard) {
         int utility = 138;
         int sum = 0;
         for (int i = 0; i < numRows; i++)
