@@ -25,6 +25,8 @@ public class PlayerFactory {
             throw new IllegalArgumentException("Player name invalid");
         if(color == null)
             color = getRandomColor();
+        if(model == null)
+            throw new IllegalArgumentException("Model invalid");
         if (type == PlayerType.HUMAN) {
             currentPlayerCount++;
             return new HumanPlayer(currentPlayerCount, name, color);
@@ -32,8 +34,13 @@ public class PlayerFactory {
         else {
             currentPlayerCount++;
             //TODO: fix otherplayerid
-            return new ComputerPlayer(currentPlayerCount, name, color, model, 1);
+            return new ComputerPlayer(currentPlayerCount, name, color, model, 1, AIDifficulty.EASY);
         }
+    }
+
+    public static void clearPlayers() {
+        availableColors.clear();
+        currentPlayerCount = 0;
     }
 
     private static Color getRandomColor() {

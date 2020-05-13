@@ -21,6 +21,7 @@ public class ConnectFourView implements Listner {
     private JPanel introductionChooseGameType;
     private JPanel playerinformation;
     private JPanel gameGrid;
+    private JPanel buttonPanel;
     private GridLayout gridLayout;
     private JLabel instructions;
     private JLabel introduction;
@@ -53,10 +54,14 @@ public class ConnectFourView implements Listner {
         introduction.setPreferredSize(new Dimension(700, 50));
         introduction.setHorizontalAlignment(SwingConstants.CENTER);
 
+        buttonPanel = new JPanel();
         startTwoPlayer= new JButton("2 player");
-        startTwoPlayer.setPreferredSize(new Dimension(350,50));
+        startTwoPlayer.setPreferredSize(new Dimension(300,50));
+        //startTwoPlayer.setHorizontalAlignment(SwingConstants.CENTER);
         startWithComputer= new JButton("1 player (vs computer)");
-        startWithComputer.setPreferredSize(new Dimension(350,50));
+        startWithComputer.setPreferredSize(new Dimension(300,50));
+        buttonPanel.add(startTwoPlayer);
+        buttonPanel.add(startWithComputer);
 
         instructions = new JLabel();
         instructions.setPreferredSize(new Dimension(700, 50));
@@ -66,13 +71,13 @@ public class ConnectFourView implements Listner {
         introductionChooseGameType = new JPanel();
         introductionChooseGameType.setLayout(new BorderLayout());
         introductionChooseGameType.add(introduction, BorderLayout.NORTH);
-        introductionChooseGameType.add(startTwoPlayer, BorderLayout.WEST);
-        introductionChooseGameType.add(startWithComputer, BorderLayout.EAST);
-        introductionChooseGameType.add(instructions, BorderLayout.SOUTH);
+        introductionChooseGameType.add(buttonPanel, BorderLayout.CENTER);
+        //introductionChooseGameType.add(instructions, BorderLayout.SOUTH);
         introductionChooseGameType.setSize(400, 200);
 
         frame.getContentPane().add(introductionChooseGameType, BorderLayout.NORTH);
-        frame.setSize(700, 600);
+        frame.getContentPane().add(instructions, BorderLayout.SOUTH);
+        frame.setSize(700, 250);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -93,7 +98,12 @@ public class ConnectFourView implements Listner {
 
         startWithComputer.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                controller.startGameWithComputer();
+                String[] options = new String[] {"EASY", "MEDIUM", "HARD"};
+                int response = JOptionPane.showOptionDialog(null, "Choose the AI difficulty", "AI Power",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                        null, options, options[0]);
+
+                controller.startGameWithComputer(response);
                 introductionChooseGameType.setVisible(false);
                 gameGrid.setVisible(true);
             }
@@ -137,13 +147,14 @@ public class ConnectFourView implements Listner {
         gameGrid.setVisible(false);
         frame.add(gameGrid, BorderLayout.CENTER);
         frame.setVisible(true);
+        frame.setSize(700, 650);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     @Override
     public void gameStart() {
-
+        JOptionPane.showMessageDialog(frame, "Get Ready! Player to make the first 4 in a row wins!");
     }
 
     @Override
@@ -153,17 +164,24 @@ public class ConnectFourView implements Listner {
 
     @Override
     public void gameEnd(Result result, Player player) {
-        String message;
-        if(result == Result.WIN)
-            message = player.getPlayerName() + " won!";
+        String title = "Game Over";
+        String message = "";
+        if(result == Result.WIN) {
+            message = player.getPlayerName() + " won! \nDo you want to play again ?";
+        }
         else
-            message = "Game Draw";
+            message = "Game Draw! \nDo you want to play again ?";
         int option = JOptionPane.showConfirmDialog(frame,
-                "Do you want to play again ?", message,
+                message, title,
                 JOptionPane.YES_NO_OPTION);
 
         if (option == JOptionPane.YES_OPTION)
-            initializeGame();
+        {
+            controller.resetGame();
+            frame.setSize(700, 250);
+            introductionChooseGameType.setVisible(true);
+            gameGrid.setVisible(false);
+        }
         else
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
@@ -187,7 +205,7 @@ public class ConnectFourView implements Listner {
             });
             timer.setRepeats(false);
             timer.start();
-            timeForAnimation += 100*i;
+            timeForAnimation += 110*i;
 
         }
 
@@ -202,7 +220,7 @@ public class ConnectFourView implements Listner {
 
     @Override
     public void disableAddingTokensTo(int column) {
-
+        buttons[column].setEnabled(false);
     }
 
     private static class OvalIcons implements Icon {

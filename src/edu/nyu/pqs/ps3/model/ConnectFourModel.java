@@ -5,6 +5,8 @@ package edu.nyu.pqs.ps3.model;
 //TODO: check scope of each function
 //TODO: remove players from factory for round2
 //TODO: fix otherplayerid
+//TODO: give player choice for colors
+//TODO: add players turn to introduction
 import edu.nyu.pqs.ps3.players.Player;
 
 import java.util.ArrayList;
@@ -100,8 +102,8 @@ public class ConnectFourModel {
     }
 
     public void gameStart(){
-        fireInitBoard(numRows, numCols);
         fireGameStart();
+        fireInitBoard(numRows, numCols);
         currentPlayer = players.get(0);
         currentPlayer.play();
         //nextMove();

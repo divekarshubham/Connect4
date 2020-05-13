@@ -17,6 +17,7 @@ public class ComputerPlayer implements Player{
     int numCols;
     int tokensToWin;
     int otherPlayerId;
+    AIDifficulty difficulty;
     private  int[][] evaluationTable = {{3, 4, 5, 7, 5, 4, 3},
             {4, 6, 8, 10, 8, 6, 4},
             {5, 8, 11, 13, 11, 8, 5},
@@ -25,7 +26,7 @@ public class ComputerPlayer implements Player{
             {3, 4, 5, 7, 5, 4, 3}};
     private int maxDepth = 10;
 
-    public ComputerPlayer(int playerId, String playerName, Color playerColor, ConnectFourModel model, int otherPlayerId){
+    public ComputerPlayer(int playerId, String playerName, Color playerColor, ConnectFourModel model, int otherPlayerId, AIDifficulty difficulty){
         this.playerId = playerId;
         this.playerName = playerName;
         this. playerColor = playerColor;
@@ -34,6 +35,7 @@ public class ComputerPlayer implements Player{
         numRows = model.getNumRows();
         tokensToWin = model.getTokensToWin();
         this.otherPlayerId = otherPlayerId;
+        this.difficulty = difficulty;
     }
 
     private int[][] generateBoardCopy(int[][] board){
@@ -65,14 +67,19 @@ public class ComputerPlayer implements Player{
     @Override
     public void play() {
         //board = generateBoardCopy(model.getBoard());  //get grid status from model
-       // model.insertToken(new Random().nextInt(6));
-        int col = minimax(generateBoardCopy(model.getBoard()), maxDepth, Integer.MIN_VALUE, Integer.MAX_VALUE, true, 0).getCol();
-        model.insertToken(col);
+       if(difficulty == AIDifficulty.EASY)
+           model.insertToken(new Random().nextInt(numCols-1));
+       else {
+           int col = minimax(generateBoardCopy(model.getBoard()), maxDepth, Integer.MIN_VALUE, Integer.MAX_VALUE, true, 0).getCol();
+           model.insertToken(col);
+       }
+
+
     }
 
     private Pair minimax(int[][] board,int depth,int alpha,int beta, boolean maximizingPlayer, int column){
         if(depth == 0)
-            return new Pair(column, evaluateBoard_center(board));
+            return new Pair(column, evaluateBoard(board));
         Result result = checkGameStatus(board);
         if(result == Result.WIN){
             //printBoard(board);
@@ -115,6 +122,12 @@ public class ComputerPlayer implements Player{
             }
             return new Pair(retcol, minEval);
         }
+    }
+
+    private int evaluateBoard(int[][] newBoard){
+        if (difficulty == AIDifficulty.MEDIUM)
+            return evaluateBoard_static(newBoard);
+        return  evaluateBoard_center(newBoard);
     }
 
     private int evaluateBoard_center(int [][] newBoard) {

@@ -1,9 +1,6 @@
 package edu.nyu.pqs.ps3.model;
 
-import edu.nyu.pqs.ps3.players.ComputerPlayer;
-import edu.nyu.pqs.ps3.players.HumanPlayer;
-import edu.nyu.pqs.ps3.players.PlayerFactory;
-import edu.nyu.pqs.ps3.players.PlayerType;
+import edu.nyu.pqs.ps3.players.*;
 
 import java.awt.*;
 
@@ -15,7 +12,7 @@ public class ConnectFourController {
     }
 
     public void startGameWithPlayer(String player1, String player2){
-        model.resetBoard();
+
         model.addPlayers(new HumanPlayer(1,"SD", Color.RED));
         model.addPlayers(new HumanPlayer(2,"AMS", Color.YELLOW));
 //        model.addPlayers(PlayerFactory.getPlayer(PlayerType.HUMAN, player1, null));
@@ -23,10 +20,16 @@ public class ConnectFourController {
         model.gameStart();
     }
 
-    public void startGameWithComputer(){
-        model.resetBoard();
+    public void startGameWithComputer(int difficult){
+        //TODO: move this difficulty to controller
+        AIDifficulty difficulty = AIDifficulty.EASY;
+        if(difficult == 2)
+            difficulty = AIDifficulty.HARD;
+        else if(difficult == 1)
+            difficulty = AIDifficulty.MEDIUM;
+
         model.addPlayers(new HumanPlayer(1,"SD", Color.RED));
-        model.addPlayers(new ComputerPlayer(2,"AMS", Color.YELLOW, model, 1));
+        model.addPlayers(new ComputerPlayer(2,"AMS", Color.YELLOW, model, 1, difficulty));
 //        model.addPlayers(PlayerFactory.getPlayer(PlayerType.HUMAN, player1, null));
 //        model.addPlayers(PlayerFactory.getPlayer(PlayerType.HUMAN, player2, null));
         model.gameStart();
@@ -37,6 +40,10 @@ public class ConnectFourController {
         model.insertToken(column);
     }
 
+    public void resetGame(){
+        model.resetBoard();
+        PlayerFactory.clearPlayers();
+    }
     public ConnectFourModel getModel(){
         return model;
     }
