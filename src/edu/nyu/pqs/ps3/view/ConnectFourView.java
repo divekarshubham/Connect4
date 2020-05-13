@@ -159,7 +159,7 @@ public class ConnectFourView implements Listner {
 
     @Override
     public void playerTurn(Player player) {
-
+        instructions.setText(player.getPlayerName() + "'s turn");
     }
 
     @Override
@@ -179,6 +179,7 @@ public class ConnectFourView implements Listner {
         {
             controller.resetGame();
             frame.setSize(700, 250);
+            instructions.setText("Please select the number of players!!!");
             introductionChooseGameType.setVisible(true);
             gameGrid.setVisible(false);
         }

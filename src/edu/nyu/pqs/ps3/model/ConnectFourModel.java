@@ -106,7 +106,7 @@ public class ConnectFourModel {
         fireInitBoard(numRows, numCols);
         currentPlayer = players.get(0);
         currentPlayer.play();
-        //nextMove();
+        firePlayerTurn(currentPlayer);
     }
 
     private void nextMove(){
@@ -116,6 +116,7 @@ public class ConnectFourModel {
         else {
             updatePlayerTurn();
             currentPlayer.play();
+            firePlayerTurn(currentPlayer);
         }
     }
 
@@ -239,6 +240,12 @@ public class ConnectFourModel {
     private void fireInitBoard(int rows, int columns) {
         for (Listner listner : listners){
             listner.initBoard(rows, columns);
+        }
+    }
+
+    private void firePlayerTurn(Player currentPlayer) {
+        for (Listner listner : listners){
+            listner.playerTurn(currentPlayer);
         }
     }
 
