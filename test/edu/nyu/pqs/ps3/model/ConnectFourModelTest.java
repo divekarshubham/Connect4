@@ -16,18 +16,17 @@ public class ConnectFourModelTest {
     @Before
     public void setUp() throws Exception {
         int board[][] = {
-                {0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0},
-                {0,0,0,0,1,1,0},
-                {0,0,0,2,1,1,0},
-                {0,0,0,2,2,2,1},
+                {0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 1, 1, 0},
+                {0, 0, 0, 2, 1, 1, 0},
+                {0, 0, 0, 2, 2, 2, 1},
         };
 
         model = new ConnectFourModel.Builder().initWithBoard(board).build();
         model.addPlayers(new HumanPlayer(1,"SD", Color.RED));
         model.addPlayers(new HumanPlayer(2,"AMS", Color.YELLOW));
-        //model.gameStart();
         model.startTest();
         model.printBoard();
     }
